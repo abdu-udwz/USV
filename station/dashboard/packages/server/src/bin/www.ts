@@ -6,6 +6,7 @@
 
 import http from 'http'
 import type { ListenOptions } from 'net'
+import startup from '@/boot/index'
 import app from '@/app'
 
 
@@ -30,6 +31,9 @@ server.on('listening', onListening)
 
 const serverOptions: ListenOptions = { port }
 server.listen(serverOptions)
+
+// initialize server bindings
+startup(server)
 
 /**
  * Normalize a port into a number.

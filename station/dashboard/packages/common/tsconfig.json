@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "rootDir": ".",
+    "target": "ES2021",
+    "module": "CommonJS",
+    "baseUrl": ".",
+    "outDir": "dist",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    "composite": true,
+    "declaration": true
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

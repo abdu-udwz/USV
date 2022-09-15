@@ -11,9 +11,20 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "common": [
+        "../common/src"
+      ],
+      "common/*": [
+        "../common/src/*"
       ]
     }
   },
+  "references": [
+    {
+      "path": "../common"
+    }
+  ],
   "ts-node": {
     "transpileOnly": true,
     "files": true

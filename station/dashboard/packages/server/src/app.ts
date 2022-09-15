@@ -1,7 +1,7 @@
 import express from 'express'
 // import path from 'path'
 import cors from '@/middleware/cors'
-// import { createProxyMiddleware } from 'http-proxy-middleware'
+import { createProxyMiddleware } from 'http-proxy-middleware'
 import indexRouter from '@/routes/index'
 
 const app = express()
@@ -18,8 +18,9 @@ app.use(cors)
 
 app.use('/_api', indexRouter)
 
-app.get('/', (req, res) => {
-  res.send('<h1>Hello, world</h1>')
-})
+app.use('/', createProxyMiddleware(process.env.NUXT_URL ?? 'http://localhost:5173', {
+  secure: false,
+  changeOrigin: true,
+}))
 
 export default app
