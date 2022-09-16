@@ -20,6 +20,7 @@ app.use('/_api', indexRouter)
 
 app.use('/', createProxyMiddleware(process.env.NUXT_URL ?? 'http://localhost:5173', {
   secure: false,
+  ws: true,
   changeOrigin: true,
 }))
 

@@ -1,48 +1,34 @@
 import type { Server, Socket } from 'socket.io'
+import type {  ClientToServerEvents, ServerToClientEvents, SocketData  } from 'common/types/socket'
+
+type CustomSocketServer = Server<ClientToServerEvents, ServerToClientEvents, any, SocketData>
 
 export interface SocketEventListener {
   event: string
   handle: (socket: Socket, ...args: any[]) => void
 }
 
-export class SocketManager {
-  private _io: Server | null = null
-  private readonly listeners: SocketEventListener[] = []
+const SocketManager = {
+  _io: null as CustomSocketServer | null,
 
-  initialize (server: Server): void {
+  initialize (server: CustomSocketServer): void {
     this._io = server
 
     this.io.on('connection', (socket) => {
       console.log(`[Socket] socket connected with id ${socket.id}`)
-      this.onSocketConnected(socket)
     })
-  }
-
-  private onSocketConnected (socket: Socket): void {
-    for (const listener of this.listeners) {
-      socket.on(listener.event, (...args) => listener.handle(socket, ...args))
-    }
-  }
-
-  emitToUser (userId: string, event: string, ...args: any[]): void {
-    const room = userId 
-    this.io.to(room).emit(event, ...args)
-  }
-
-  addEventListener (listener: SocketEventListener): void {
-    this.listeners.push(listener)
-  }
+  },
 
   // getters
-  private get io (): Server {
+  get io (): CustomSocketServer {
     if (this._io == null) {
       throw new Error('Trying to use socket server before initialization')
     }
 
     return this._io
-  }
+  },
 }
 
-export const manager = new SocketManager()
+export default SocketManager
 
 

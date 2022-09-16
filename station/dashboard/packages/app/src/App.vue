@@ -1,47 +1,79 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import { onBeforeMount, onMounted } from 'vue'
+
+/*
+ * socket.io
+ */
+import socketService from '@/plugins/socket'
+import { useSocketStore } from '@/stores/socket'
+
+import { useAntennaStore } from '@/stores/antenna'
+import AntennaConnectionForm from './components/AntennaConnectionForm.vue'
+
+const socket = useSocketStore()
+onBeforeMount(() => {
+  socketService.connect()
+})
+
+// Antenna connection
+const antenna = useAntennaStore()
+
+onMounted(async () => {
+  try {
+    await antenna.checkAndUpdateStatus()
+  } catch (error: any) {
+    console.log('Antenna error:', error)
+  }
+})
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
+  <VApp>
+    <VAppBar>
+      <VAppBarTitle>
+        USV
+      </VAppBarTitle>
+    </VAppBar>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
+    <VMain>
+      <VRow>
+        <VCol cols="12">
+          <!--  antenna connection -->
+          <AntennaConnectionForm v-if="!antenna.connected" />
+        </VCol>
+      </VRow>
+    </VMain>
 
-  <main>
-    <TheWelcome />
-  </main>
+    <VNavigationDrawer
+      location="end"
+      permanent
+    >
+      <VList>
+        <VListItem title="Server connection">
+          <template #prepend>
+            <VIcon
+              :color="socket.connected ? 'green' : 'red'"
+              icon="mdi-circle"
+            />
+          </template>
+        </VListItem>
+
+        <VListItem
+          title="Antenna connection"
+          :subtitle="antenna.connected ? antenna.openPortInfo.path : ''"
+        >
+          <template #prepend>
+            <VIcon
+              :color="antenna.connected ? 'green' : 'red'"
+              icon="mdi-circle"
+            />
+          </template>
+        </VListItem>
+      </VList>
+    </VNavigationDrawer>
+  </VApp>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-}
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
 </style>

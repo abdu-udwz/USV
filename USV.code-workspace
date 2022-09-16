@@ -16,6 +16,9 @@
 		}
 	],
 	"settings": {
-		"eslint.format.enable": true
+		"eslint.format.enable": true,
+		"cSpell.words": [
+			"vuetify"
+		]
 	}
 }
