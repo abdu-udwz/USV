@@ -8,10 +8,6 @@
 			"path": "vehicle-control-system"
 		},
 		{
-			"name": "antenna",
-			"path": "station/antenna"
-		},
-		{
 			"path": "station/dashboard"
 		}
 	],
