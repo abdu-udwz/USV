@@ -13,9 +13,11 @@
     "@mdi/font": "^7.0.96",
     "axios": "^0.27.2",
     "debounce": "^1.2.1",
+    "mapbox-gl": "^2.10.0",
     "pinia": "^2.0.21",
     "socket.io-client": "^4.5.2",
     "vue": "^3.2.38",
+    "vue-mapbox-ts": "^0.9.3",
     "vuetify": "^3.0.0-beta.11"
   },
   "devDependencies": {

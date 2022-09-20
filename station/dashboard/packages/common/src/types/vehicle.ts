@@ -9,6 +9,7 @@ export interface Vehicle {
 
   longitude: number
   latitude: number
+  locationError: boolean
 
   lastContactAt: Date
 }
