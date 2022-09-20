@@ -31,6 +31,14 @@ void setup()
   Serial1.begin(GPS_BAUD);
 
   rudderServo.attach(RUDDER_PIN);
+
+  pinMode(MOTOR_PIN0, OUTPUT);
+  pinMode(MOTOR_PIN1, OUTPUT);
+  pinMode(MOTOR_PIN2, OUTPUT);
+
+  digitalWrite(MOTOR_PIN0, HIGH);
+  analogWrite(MOTOR_PIN1, LOW);
+  analogWrite(MOTOR_PIN2, LOW);
 }
 
 void loop()
