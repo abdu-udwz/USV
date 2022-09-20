@@ -37,6 +37,16 @@ const _antenna = {
   
 } as Antenna
 
+_antenna.in.on('data', (messageStr: string) => {
+  console.log('[AntennaService]: main input sink messages', messageStr)
+  try {
+    const message = JSON.parse(messageStr)
+    inputStream.emit('message', message)
+  } catch (error: any) {
+    console.warn('[antenna]: unable to parse message, could be noise or bad formatted message')
+    // console.warn(error)
+  }
+})
 
 type AntennaConnectionOptions = 
   Pick<SerialPortOpenOptions<AutoDetectTypes>, 'baudRate' | 'path'>
@@ -55,22 +65,22 @@ function initialize (options: AntennaConnectionOptions): void {
       baudRate: serial.baudRate,
     })
   })
-
-  _antenna.in.on('data', (messageStr: string) => {
-    console.log('[AntennaService]: main input sink messages', messageStr)
-    try {
-      const message = JSON.parse(messageStr)
-      inputStream.emit('message', message)
-    } catch (error: any) {
-      console.warn('[antenna]: unable to parse message, could be noise or bad formatted message')
-      // console.warn(error)
-    }
-  })
 }
 
 export function connect (options: AntennaConnectionOptions): Antenna {
   initialize(options)
   return _antenna
+}
+
+export function disconnect (): Promise<void> {
+  return new Promise((resolve, reject) => {
+    _antenna.serialport!.close((error) => {
+      if (error != null)
+        reject(error)
+      else
+        resolve()
+    })
+  })
 }
 
 export async function getAvailablePorts (): Promise<PortInfo[]> {
