@@ -10,7 +10,7 @@ float lat = 28.5458, lon = 77.1703; // create variable for latitude and longitud
 
 void navigationMain()
 {
-  if (millis() - lastTimestamp < 1000)
+  if (millis() - lastTimestamp < 7000)
     return;
 
   bool newData = false;
@@ -56,14 +56,14 @@ void navigationMain()
     serializeJson(doc, Serial);
     Serial.println();
   }
-  // if ten seconds have passed since the last fix issue a warning
-  else if (millis() - lastTimestamp > 10000)
+  // if 25 seconds have passed since the last fix issue a warning
+  else if (millis() - lastTimestamp > 25 * 1000)
   {
     doc.clear();
 
     doc["vehicleId"] = VEHICLE_ID;
-    doc["operation"] = "gpsIssue";
-    doc["message"] = "GPS Signal weak or lost";
+    doc["operation"] = "gpsError";
+    doc["message"] = "";
     doc["timestamp"] = millis();
 
     serializeJson(doc, Serial);

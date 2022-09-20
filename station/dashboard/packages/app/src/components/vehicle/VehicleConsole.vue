@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import VehicleMapView from './VehicleMapView.vue'
 import VehicleRudderControl from './VehicleRudderControl.vue'
 import VehicleMotorControl from './VehicleMotorControl.vue'
 import { useVehicleStore } from '@/stores/vehicle'
@@ -15,10 +16,7 @@ const vehicle = useVehicleStore().selected
     <VRow justify="center">
       <!-- map -->
       <VCol cols="12">
-        <VSheet
-          color="grey-lighten-1"
-          height="400"
-        />
+        <VehicleMapView />
       </VCol>
       <VCol
         tag="section"

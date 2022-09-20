@@ -27,7 +27,7 @@ interface GPSUpdateMessage extends VehicleMessageBase {
 }
 
 interface GPSIssueMessage extends VehicleMessageBase {
-  operation: 'gpsIssue'
+  operation: 'gpsError'
   angle: number
   message: string
 }
@@ -61,8 +61,10 @@ export function createVehicleIfNotExisting (vehData: Pick<Vehicle, 'id' | 'statu
 
     motorSpeed: 0,
     rudderAngle: 0,
+
     longitude: 0,
     latitude: 0,
+    locationError: false,
   })
 
   socketService.io.emit('vehicleOnline', vehiclesMap.get(vehData.id)!)
@@ -88,10 +90,13 @@ function handleVehicleMessage (data: VehicleMessage): void {
   if (data.operation === 'gpsUpdate') {
     targetVehicle.latitude = data.lat
     targetVehicle.longitude = data.lon
+
+    targetVehicle.locationError = false
   }
 
-  if (data.operation == 'gpsIssue') {
+  if (data.operation == 'gpsError') {
     console.warn('[VehiclesService]:', data.vehicleId, 'vehicle cannot use gps properly.')
+    targetVehicle.locationError = true
   }
 
   emitVehicleUpdate(data.vehicleId)
