@@ -4,7 +4,7 @@ import type { ServerToClientEvents, ClientToServerEvents } from 'common/types/so
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
   autoConnect: false,
   reconnection: true,
+  transports: ['websocket'],
 })
-
 
 export default socket
