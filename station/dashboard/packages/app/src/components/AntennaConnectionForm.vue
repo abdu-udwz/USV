@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { watch, onMounted, ref } from 'vue'
 import { useAntennaStore } from '@/stores/antenna'
 // types
 // import type { AntennaPortInfo } from 'common/types/antenna'
@@ -8,13 +8,18 @@ import { useAntennaStore } from '@/stores/antenna'
 const antenna = useAntennaStore()
 
 // port path
-const portPath = ref<null | string>(null)
+const portPath = ref<string>('')
 
-onMounted(() => {
+function autoSelectCheck (): void {
   if (antenna.availablePorts.length !== 0) {
     portPath.value = antenna.availablePorts[0].path
   }
-})
+}
+
+onMounted(autoSelectCheck)
+watch(() => antenna.availablePorts, autoSelectCheck)
+
+// render
 function getAntennaPortName (item: any): string {
   return item.path
 }
@@ -49,6 +54,8 @@ async function onSubmit (): Promise<void> {
       subtitle="The antenna module is not connected. "
       :loading="antenna.openingConnection"
       :disabled="antenna.openingConnection"
+      class="mx-auto"
+      max-width="400px"
     >
       <VCardText>
         <VSelect
