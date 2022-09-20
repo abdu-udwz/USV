@@ -1,44 +1,121 @@
-#include <Arduino.h>
-#include <TinyGPS.h>
+#include <USVSystem.h>
+#include <ArduinoJson.h>
+#include <Servo.h>
 
-#include <prefs.h>
+/*
+ * Serial is synced with the XBee
+ * Serial1 (one) is attached to the GPS module
+ */
+String inputString = "";     // a string to hold incoming data
+bool stringComplete = false; // whether the string is complete
 
-// Serial is synced with the XBee
+/**
+ * @brief whether or not the vehicle is stationary.
+ *
+ * when true, the vehicle will only report ping signal to the station
+ */
+bool idling = false;
 
-// Serial1 is the GPS
-TinyGPS gps;
+/* timing */
+unsigned long pingTimestamp = 0;
 
-float lat = 28.5458, lon = 77.1703; // create variable for latitude and longitude object
+/* */
+Servo rudderServo;
+
+/* decelerations */
+extern void sendPing();
 
 void setup()
 {
-  // digitalWrite(13, 0);
   Serial.begin(XBEE_BAUD);
   Serial1.begin(GPS_BAUD);
 
-  Serial.print("Simple TinyGPS library v. ");
-  Serial.println(TinyGPS::library_version());
-  Serial.println("by Mikal Hart");
-  Serial.println();
+  rudderServo.attach(RUDDER_PIN);
 }
 
 void loop()
 {
-  while (Serial1.available())
-  {                                 // check for gps data
-    if (gps.encode(Serial1.read())) // encode gps data
-    {
-      gps.f_get_position(&lat, &lon); // get latitude and longitude
+  if (stringComplete)
+  {
+    StaticJsonDocument<1000> doc;
+    DeserializationError parseError = deserializeJson(doc, inputString);
 
-      Serial.print("Position: ");
-      Serial.print("Latitude:");
-      Serial.print(lat, 6);
-      Serial.print(";");
-      Serial.print("Longitude:");
-      Serial.println(lon, 6);
-      Serial.print(lat);
-      Serial.print(" ");
+    if (parseError)
+    {
+      doc.clear();
+      doc["vehicleId"] = VEHICLE_ID;
+      doc["operation"] = "error";
+      doc["message"] = parseError.f_str();
+      serializeJson(doc, Serial);
+    }
+    else
+    {
+      const char *operation = doc["operation"];
+
+      if (strcmp("updateRudderAngle", operation) == 0)
+      {
+        short angle = doc["angle"];
+        updateRudderAngle(angle);
+      }
+      else if (strcmp(operation, "updateMotor") == 0)
+      {
+        if (doc.containsKey("speed"))
+        {
+          updateMotorSpeed(doc["speed"] | 0);
+        }
+      }
+    }
+
+    stringComplete = false;
+    inputString = "";
+  }
+
+  if (!idling)
+  {
+    // TODO: so much stuff to do here
+    navigationMain();
+  }
+
+  if (millis() - pingTimestamp > 5000)
+  {
+
+    sendPing();
+  }
+}
+
+/*
+  SerialEvent occurs whenever a new data comes in the
+ hardware serial RX.  This routine is run between each
+ time loop() runs, so using delay inside loop can delay
+ response.  Multiple bytes of data may be available.
+ This is general code you can reuse.
+ */
+void serialEvent()
+{
+  while (Serial.available() && !stringComplete)
+  {
+    char inChar = (char)Serial.read();
+    inputString += inChar;
+    if (inChar == '\n')
+    {
+      stringComplete = true;
     }
   }
-  delay(1000);
+}
+
+void sendPing()
+{
+  StaticJsonDocument<200> doc;
+
+  // Add values in the document
+  doc["vehicleId"] = VEHICLE_ID;
+  doc["operation"] = "ping";
+  doc["status"] = idling ? "IDLING" : "DEPLOYED";
+
+  pingTimestamp = millis();
+  doc["timestamp"] = pingTimestamp;
+
+  // Generate the minified JSON and send it to the Serial port.
+  serializeJson(doc, Serial);
+  Serial.println();
 }

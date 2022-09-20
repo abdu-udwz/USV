@@ -15,6 +15,9 @@
 		"eslint.format.enable": true,
 		"cSpell.words": [
 			"vuetify"
-		]
+		],
+		"files.associations": {
+			"*.tcc": "cpp"
+		}
 	}
 }
