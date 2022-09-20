@@ -6,6 +6,7 @@ import {
   SerialPort, 
   SerialPortOpenOptions,
 } from 'serialport'
+import { ReadlineParser } from '@serialport/parser-readline'
 import type { PortInfo, AutoDetectTypes } from '@serialport/bindings-cpp'
 export { PortInfo } from '@serialport/bindings-cpp'
 
@@ -14,7 +15,12 @@ import socketService from './socket'
 interface Antenna {
   serialport: SerialPort | null
   isAvailable: () => boolean
+
+  in: ReadlineParser
+  out: SerialPort
 }
+
+const inputStream = new ReadlineParser()
 
 const _antenna = {
   serialport: null,
@@ -23,6 +29,12 @@ const _antenna = {
     return this.serialport?.isOpen
   },
 
+  in: inputStream,
+
+  get out () {
+    return this.serialport
+  },
+  
 } as Antenna
 
 
@@ -33,6 +45,8 @@ function initialize (options: AntennaConnectionOptions): void {
   const serial = new SerialPort({ ...options })
   _antenna.serialport = serial
 
+  serial.pipe(_antenna.in)
+
   serial.on('open', () => {
     console.log('antenna connected successfully')
 
@@ -40,6 +54,17 @@ function initialize (options: AntennaConnectionOptions): void {
       path: serial.path,
       baudRate: serial.baudRate,
     })
+  })
+
+  _antenna.in.on('data', (messageStr: string) => {
+    console.log('[AntennaService]: main input sink messages', messageStr)
+    try {
+      const message = JSON.parse(messageStr)
+      inputStream.emit('message', message)
+    } catch (error: any) {
+      console.warn('[antenna]: unable to parse message, could be noise or bad formatted message')
+      // console.warn(error)
+    }
   })
 }
 
