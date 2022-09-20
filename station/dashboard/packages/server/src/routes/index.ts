@@ -1,6 +1,7 @@
 import { Router, json, urlencoded } from 'express'
 // sub-routers
 import antennaRouter from './antenna'
+import vehiclesRouter from './vehicles'
 
 const router = Router()
 
@@ -12,5 +13,6 @@ router.get('/', (req, res) => res.json({
 }))
 
 router.use('/antenna', antennaRouter)
+router.use('/vehicles', vehiclesRouter)
 
 export default router

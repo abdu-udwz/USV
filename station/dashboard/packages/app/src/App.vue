@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onBeforeMount, onMounted } from 'vue'
-
+// components
+import VehicleSelection from '@/components/VehicleSelection.vue'
 /*
  * socket.io
  */
@@ -8,7 +9,10 @@ import socketService from '@/plugins/socket'
 import { useSocketStore } from '@/stores/socket'
 
 import { useAntennaStore } from '@/stores/antenna'
-import AntennaConnectionForm from './components/AntennaConnectionForm.vue'
+import AntennaConnectionForm from '@/components/AntennaConnectionForm.vue'
+
+import { useVehicleStore } from '@/stores/vehicle'
+import VehicleConsole from './components/vehicle/VehicleConsole.vue'
 
 const socket = useSocketStore()
 onBeforeMount(() => {
@@ -25,6 +29,11 @@ onMounted(async () => {
     console.log('Antenna error:', error)
   }
 })
+
+
+// vehicle console
+const vehicle = useVehicleStore()
+
 </script>
 
 <template>
@@ -34,20 +43,7 @@ onMounted(async () => {
         USV
       </VAppBarTitle>
     </VAppBar>
-
-    <VMain>
-      <VRow>
-        <VCol cols="12">
-          <!--  antenna connection -->
-          <AntennaConnectionForm v-if="!antenna.connected" />
-        </VCol>
-      </VRow>
-    </VMain>
-
-    <VNavigationDrawer
-      location="end"
-      permanent
-    >
+    <VNavigationDrawer>
       <VList>
         <VListItem title="Server connection">
           <template #prepend>
@@ -81,7 +77,44 @@ onMounted(async () => {
           </template>
         </VListItem>
       </VList>
+
+      <VDivider />
+      <VehicleSelection
+        v-if="antenna.connected"
+      />
     </VNavigationDrawer>
+
+    <VMain name="app-content">
+      <VContainer>
+        <VRow>
+          <!--  antenna connection form -->
+          <VCol 
+            v-if="!antenna.connected"
+            cols="12"
+          >
+            <AntennaConnectionForm />
+          </VCol>
+
+          <!-- vehicle console -->
+          <VCol
+            v-if="antenna.connected"
+          >
+            <div
+              v-if="vehicle.selected == null"
+              class="d-flex flex-column justify-center align-center text-medium-emphasis"
+            >
+              <VCardTitle class="">
+                No vehicle selected
+              </VCardTitle>
+              <VCardSubtitle>
+                You need to select a vehicle from the side bar first to view and control its component.
+              </VCardSubtitle>
+            </div>
+            <VehicleConsole v-else />
+          </VCol>
+        </VRow>
+      </VContainer>
+    </VMain>
   </VApp>
 </template>
 
