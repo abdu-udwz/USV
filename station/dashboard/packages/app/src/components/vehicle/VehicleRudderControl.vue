@@ -20,6 +20,7 @@ const internalModelValue = computed<number>({
   <VCard 
     title="Rudder"
     subtitle="Configure rudder angle."
+    height="100%"
   >
     <VCardText>
       <VSlider 

@@ -11,6 +11,9 @@ export interface Vehicle {
   latitude: number
   locationError: boolean
 
+  temperature: number
+  humidity: number
+
   lastContactAt: Date
 }
 

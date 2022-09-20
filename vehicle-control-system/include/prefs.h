@@ -12,4 +12,6 @@
 
 #define RUDDER_PIN 9
 
+#define DHT11_PIN 7
+
 #endif

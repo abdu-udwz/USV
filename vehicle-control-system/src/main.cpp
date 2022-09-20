@@ -82,6 +82,7 @@ void loop()
   {
     // TODO: so much stuff to do here
     navigationMain();
+    readAirConditions();
   }
 
   if (millis() - pingTimestamp > 5000)

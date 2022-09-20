@@ -13,7 +13,12 @@ const vehicle = useVehicleStore().selected
   </VToolbar>
 
   <VSheet>
-    <VRow justify="center">
+    <VRow
+      justify="center"
+      align="stretch"
+      align-content="stretch"
+      dense
+    >
       <!-- map -->
       <VCol cols="12">
         <VehicleMapView />
@@ -21,7 +26,7 @@ const vehicle = useVehicleStore().selected
       <VCol
         tag="section"
         cols="12"
-        lg="6"
+        lg="5"
       >
         <VehicleMotorControl />
       </VCol>
@@ -29,9 +34,25 @@ const vehicle = useVehicleStore().selected
       <VCol
         tag="section"
         cols="12"
-        lg="6"
+        lg="5"
       >
         <VehicleRudderControl />
+      </VCol>
+      <!-- Air conditions -->
+      <VCol
+        tag="section"
+        cols="12"
+        lg="2"
+      >
+        <VCard
+          title="Air conditions"
+          height="100%"
+        >
+          <VCardText class="text-center">
+            <p>Humidity {{ vehicle?.humidity != null ? `${vehicle.humidity}%` : 'NaN' }}</p>
+            <p>Temp.  {{ vehicle?.temperature != null ? `${vehicle?.temperature} C` : 'NaN' }}&deg;</p>
+          </VCardText>
+        </VCard>
       </VCol>
     </VRow>
   </VSheet>

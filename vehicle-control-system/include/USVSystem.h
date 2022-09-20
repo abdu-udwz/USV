@@ -16,4 +16,7 @@ void navigationMain();
 extern Servo rudderServo; // create servo object to control a servo
 void updateRudderAngle(short angle);
 
+/* */
+void readAirConditions();
+
 #endif

@@ -32,12 +32,18 @@ interface GPSIssueMessage extends VehicleMessageBase {
   message: string
 }
 
+interface AirConditionsMessage extends VehicleMessageBase {
+  operation: 'airConditionsUpdate'
+  temp: number
+  humd: number
+}
+
 interface ErrorMessage extends VehicleMessageBase {
   operation: 'error'
   message: string
 }
 
-type VehicleMessage = PingMessage | GPSUpdateMessage | GPSIssueMessage | ErrorMessage
+type VehicleMessage = PingMessage | GPSUpdateMessage | GPSIssueMessage | AirConditionsMessage | ErrorMessage
 
 // internal incoming
 
@@ -65,6 +71,9 @@ export function createVehicleIfNotExisting (vehData: Pick<Vehicle, 'id' | 'statu
     longitude: 0,
     latitude: 0,
     locationError: false,
+
+    temperature: 25,
+    humidity: 3,
   })
 
   socketService.io.emit('vehicleOnline', vehiclesMap.get(vehData.id)!)
@@ -97,6 +106,11 @@ function handleVehicleMessage (data: VehicleMessage): void {
   if (data.operation == 'gpsError') {
     console.warn('[VehiclesService]:', data.vehicleId, 'vehicle cannot use gps properly.')
     targetVehicle.locationError = true
+  }
+
+  if (data.operation === 'airConditionsUpdate') {
+    targetVehicle.humidity = data.humd
+    targetVehicle.temperature = data.temp
   }
 
   emitVehicleUpdate(data.vehicleId)
