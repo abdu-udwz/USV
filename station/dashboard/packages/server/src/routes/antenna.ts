@@ -6,4 +6,6 @@ const router = Router()
 router.get('/', controller.get)
 router.post('/', controller.openAntennaConnection)
 
+router.delete('/', controller.closeAntennaConnection)
+
 export default router

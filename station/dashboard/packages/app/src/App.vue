@@ -68,6 +68,17 @@ onMounted(async () => {
               icon="mdi-circle"
             />
           </template>
+
+          <template
+            v-if="antenna.connected"
+            #append
+          >
+            <VIcon
+              title="Close connection with antenna"
+              icon="mdi-close"
+              @click="antenna.closeConnection"
+            />
+          </template>
         </VListItem>
       </VList>
     </VNavigationDrawer>

@@ -1,4 +1,4 @@
-import { ref, computed, reactive } from 'vue'
+import { ref, reactive } from 'vue'
 import { defineStore } from 'pinia'
 
 import * as antennaService from '@/api/antenna'
@@ -50,6 +50,15 @@ export const useAntennaStore = defineStore('antenna', () => {
     }
   }
 
+  async function closeConnection (): Promise<void> {
+    try {
+      await antennaService.closeConnection()
+      connected.value = false
+    } catch (error: any) {
+      //
+    }
+  }
+
   return { 
     connected, 
     openPortInfo,
@@ -58,5 +67,6 @@ export const useAntennaStore = defineStore('antenna', () => {
 
     checkAndUpdateStatus,
     openConnection,
+    closeConnection,
   }
 })

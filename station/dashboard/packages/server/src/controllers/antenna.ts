@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 
 import antenna, { 
   connect as antennaConnect,
+  disconnect as antennaDisconnect,
   getAvailablePorts, 
   type PortInfo, 
 } from '@/services/antenna'
@@ -72,4 +73,19 @@ export async function openAntennaConnection (req: Request<any, any, OpenAntennaR
   } catch (error: any) {
     next(error)
   }
+}
+
+
+/*
+ * close connection
+ */
+
+export async function closeAntennaConnection (req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    await antennaDisconnect()
+    res.sendStatus(204)
+  } catch (error: any) {
+    next(error)
+  }
+  
 }
