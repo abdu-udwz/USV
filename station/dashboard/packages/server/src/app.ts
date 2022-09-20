@@ -1,7 +1,7 @@
 import express from 'express'
 // import path from 'path'
 import cors from '@/middleware/cors'
-import { createProxyMiddleware } from 'http-proxy-middleware'
+import { createProxyMiddleware, type Filter as HttpProxyFilter } from 'http-proxy-middleware'
 import indexRouter from '@/routes/index'
 
 const app = express()
@@ -18,10 +18,17 @@ app.use(cors)
 
 app.use('/_api', indexRouter)
 
-app.use('/', createProxyMiddleware(process.env.NUXT_URL ?? 'http://localhost:5173', {
+const proxyFilter: HttpProxyFilter = (path) => {
+  return !path.includes('socket.io')
+}
+
+const httpProxy = createProxyMiddleware(proxyFilter, {
+  target: process.env.NUXT_URL ?? 'http://localhost:5173',
   secure: false,
   ws: true,
   changeOrigin: true,
-}))
+})
+
+app.use(httpProxy)
 
 export default app
