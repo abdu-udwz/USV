@@ -11,12 +11,17 @@ export const useSocketStore = defineStore('socket', () => {
     connected.value = true
   })
 
+  socketService.on('disconnect', (reason) => {
+    console.error('[socket] disconnect', reason)
+  })
+  
+
   socketService.on('disconnect', () => {
     connected.value = false
   })
 
   socketService.onAny((...args) => {
-    console.log('socket', ...args)
+    console.log('[socket]:', ...args)
   })
 
   return { connected }
