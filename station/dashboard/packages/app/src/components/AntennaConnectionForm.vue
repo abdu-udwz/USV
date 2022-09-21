@@ -2,7 +2,7 @@
 import { watch, onMounted, ref } from 'vue'
 import { useAntennaStore } from '@/stores/antenna'
 // types
-// import type { AntennaPortInfo } from 'common/types/antenna'
+import type { AntennaPortInfo } from 'common/types/antenna'
 
 // Antenna connection
 const antenna = useAntennaStore()
@@ -20,8 +20,12 @@ onMounted(autoSelectCheck)
 watch(() => antenna.availablePorts, autoSelectCheck)
 
 // render
-function getAntennaPortName (item: any): string {
-  return item.path
+function getAntennaPortName (item: AntennaPortInfo): string {
+  let displayText = item.path
+  if (item.manufacturer != null) {
+    displayText += ` (${item.manufacturer})`
+  }
+  return displayText
 }
 
 // baud rate

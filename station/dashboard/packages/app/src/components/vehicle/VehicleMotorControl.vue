@@ -75,7 +75,7 @@ const speedIcon = computed(() => {
         v-model="internalSpeed"
         label="Speed"
         :color="speedIcon.color"
-        step="1"
+        step="5"
         show-ticks="always"
         thumb-label
         :ticks="[0, 25, 50, 75, 100]"
