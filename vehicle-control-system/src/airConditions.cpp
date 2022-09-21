@@ -7,7 +7,7 @@ unsigned long lastDHTTimestamp = 0;
 
 void readAirConditions()
 {
-  if (millis() - lastDHTTimestamp < 5000)
+  if (millis() - lastDHTTimestamp < 6000)
     return;
 
   StaticJsonDocument<100> doc;
