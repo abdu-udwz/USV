@@ -19,10 +19,16 @@ export const useVehicleStore = defineStore('vehicle', () => {
 
   const loadingVehicles = ref(false)
 
+  function addVehicleIfNotExists (vehicle: Vehicle): void {
+    const oldIndex = vehicles.value.findIndex((local) => local.id === vehicle.id)
+    if (oldIndex === -1) {
+      vehicles.value.push(vehicle)
+
+    }
+  }
+
   // handle socket updates
-  socketService.on('vehicleOnline', (newVehicle) => {
-    vehicles.value.push(newVehicle)
-  })
+  socketService.on('vehicleOnline', addVehicleIfNotExists)
 
   socketService.on('vehicleUpdate', (updatedVehicle) => {
     const oldIndex = vehicles.value.findIndex((local) => local.id === updatedVehicle.id)
